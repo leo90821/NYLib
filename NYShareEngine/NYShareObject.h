@@ -14,16 +14,17 @@
 #import <TencentOpenAPI/QQApiInterfaceObject.h>
 #import <TencentOpenAPI/TencentOAuthObject.h>
 #import <TencentOpenAPI/TencentOAuth.h>
+#import "TencentOpenAPI/QQApiInterface.h"
 
-
-#define SHARE_BASE_URL @""
+#define SHARE_BASE_URL @"http://htm.rioan.com"
 /**
  * 分享对象类型
  **/
 typedef NS_ENUM(NSInteger, NYShareObjectType) {
-    NYShareObjectTypeProject,/**< 分享HTM项目 */
+    NYShareObjectTypeProject = 1,/**< 分享HTM项目 */
+    NYShareObjectTypeInvestor, /**< 分享HTM投资人 */
     NYShareObjectTypeActivity,/**< 分享HTM活动 */
-    NYShareObjectTypeInvestor,/**< 分享HTM投资人 */
+    NYShareObjectTypeNews,/**< 分享HTM资讯 */
 };
 /**
  * 分享的对象

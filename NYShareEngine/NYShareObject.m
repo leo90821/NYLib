@@ -11,14 +11,24 @@
 @implementation NYShareObject
 
 @synthesize objectType = _objectType;
+@synthesize content = _content;
 
-
+- (void)setContent:(NSString *)content {
+    _content = (content.length > 50)?[NSString stringWithFormat:@"%@", [content substringToIndex:50]]:content;
+}
 - (void)setObjectType:(NYShareObjectType)objectType {
+    _objectType = objectType;
     switch (objectType) {
         case NYShareObjectTypeProject: {
             self.title = [NSString stringWithFormat:@"合投猫推荐项目[%@]", _title];
-            self.content = [NSString stringWithFormat:@"%@", _content];
             self.shareURL = [NSString stringWithFormat:@"%@/share/proj?id=%@&from=appshare", SHARE_BASE_URL, _shareID];
+            self.shareImage = _shareImage;
+            
+            break;
+        }
+        case NYShareObjectTypeNews: {
+            self.title = [NSString stringWithFormat:@"合投猫推荐资讯[%@]", _title];
+            self.shareURL = [NSString stringWithFormat:@"%@", _shareURL];
             self.shareImage = _shareImage;
             
             break;
@@ -32,7 +42,6 @@
         }
         case NYShareObjectTypeInvestor: {
             self.title = [NSString stringWithFormat:@"合投猫推荐投资人[%@]", _title];
-            self.content = [NSString stringWithFormat:@"%@", _content];
             self.shareURL = [NSString stringWithFormat:@"%@/share/invester?id=%@&from=appshare", SHARE_BASE_URL, _shareID];
             self.shareImage = _shareImage;
             break;
@@ -45,7 +54,7 @@
 - (WBMessageObject *)WeiboMessageObject {
     //!!!判断为空等情况
     WBImageObject *imageObj = [WBImageObject object];
-    imageObj.imageData = UIImageJPEGRepresentation(self.shareImage, 0);
+    imageObj.imageData = (self.shareImage != nil)?UIImageJPEGRepresentation(self.shareImage, 0):UIImageJPEGRepresentation(DefaultPortrait, 0);
     
     WBMessageObject *message = [WBMessageObject message];
     message.text = [NSString stringWithFormat:@"%@：%@。分享链接：%@", self.title, self.content, self.shareURL];
@@ -63,7 +72,9 @@
         //!!!需要压缩
         NSData *imgData = UIImageJPEGRepresentation(self.shareImage, 0);
         UIImage *smallImage = [UIImage imageWithData:imgData];
-        [message setThumbImage:smallImage];
+        CGFloat w = 300;
+        
+        [message setThumbImage:[smallImage image:smallImage scaleToSize:CGSizeMake(w, w)]];
     }
     
     WXWebpageObject *ext = [WXWebpageObject object];

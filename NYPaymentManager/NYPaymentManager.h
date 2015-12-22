@@ -75,6 +75,7 @@ typedef void(^NYPaymentComletion)(NSError *error, id requestObject, id responseO
 @property (strong, nonatomic) NSString *orderTitle; /**< 商户订单标题，商户后台提供 */
 @property (strong, nonatomic) NSString *orderPrice; /**< 订单价格，单位为元 */
 @property (strong, nonatomic) NSString *wxPrePayID; /**< 微信预支付订单号,微信支付时必填！ */
+@property (assign, nonatomic) NYPaymentType payType;/**< 支付方式 */
 @end
 /**
  * 支付通用类
@@ -103,6 +104,10 @@ typedef void(^NYPaymentComletion)(NSError *error, id requestObject, id responseO
  * @param completion 支付的回调方法
  **/
 - (void)payForWeChatWithOrderObject:(NYPaymentObject *)object completion:(NYPaymentComletion)completion;
+/**
+ * test
+ **/
+- (void)payTestForWeChatWithOrderObject:(NYPaymentObject *)object completion:(NYPaymentComletion)completion;
 /**
  * 支付统一方法
  * @param payType 支付类型，阿里支付、微信支付

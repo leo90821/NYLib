@@ -61,9 +61,9 @@
     [self sendWeChatPrePayRequestWithOrderID:object.orderID orderTitle:object.orderTitle price:centPrice completion:^(NSError *error, id requestObject, id responseObject) {
         if (error != nil) {
 //            NSLog(@"Domain:%@\n Description:%@\n request:%@\n", error.domain, error.description, requestObject);
-            if (completion != nil) {
-                completion(error, requestObject, nil);
-            }
+//            if (completion != nil) {
+//                completion(error, requestObject, nil);
+//            }
         } else {
             
             if (centPrice.floatValue < 0) {
@@ -107,9 +107,9 @@
                             completion(error, nil, nil);
                         }
                     } else {
-                        if (completion != nil) {
-                            completion(nil, nil, nil);
-                        }
+//                        if (completion != nil) {
+//                            completion(nil, nil, nil);
+//                        }
                     }
 
                 } else {
@@ -126,6 +126,7 @@
 }
 
 - (void)payForWeChatWithOrderObject:(NYPaymentObject *)object completion:(NYPaymentComletion)completion {
+    self.completion = completion;
     if (object.wxPrePayID.length == 0) {
         NSError *error  = [NSError errorWithDomain:PAYMENT_ERROR_DOMAIN_WX_PREPAYID code:NYPaymentErrorCodeWeChatGetPrePayIDFailed userInfo:@{NSLocalizedDescriptionKey:@"获取prepayid失败！\n"}];
         if (completion != nil) {
@@ -166,9 +167,9 @@
                 completion(error, nil, nil);
             }
         } else {
-            if (completion != nil) {
-                completion(nil, nil, nil);
-            }
+//            if (completion != nil) {
+//                completion(nil, nil, nil);
+//            }
         }
     }
 }
@@ -361,7 +362,9 @@
         PayResp *paymentResponse = (PayResp *)resp;
         switch (paymentResponse.errCode) {
             case 0: {
-                
+                if (self.completion!=nil) {
+                    self.completion(nil,nil,nil);
+                }
                 break;
             }
             case -1: {

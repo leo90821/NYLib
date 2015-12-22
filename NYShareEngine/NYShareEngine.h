@@ -13,10 +13,11 @@
  * 分享类型：微信、朋友圈、微博、QQ
  */
 typedef NS_ENUM(NSInteger, NYShareType) {
-    NYShareTypeQQ,              /**< QQ */
-    NYShareTypeWeChatSession,   /**< 微信好友对话 */
+    NYShareTypeWeChatSession = 1,   /**< 微信好友对话 */
     NYShareTypeWeChatMomemts,   /**< 微信朋友圈 */
     NYShareTypeWeibo,           /**< 新浪微博 */
+    NYShareTypeQQ,              /**< QQ */
+    
 };
 /**
  * 错误码类型
@@ -27,6 +28,10 @@ typedef NS_ENUM(NSInteger, NYErrorCode) {
     NYErrorCodeShareWeChatSession,
 };
 
+typedef NS_ENUM(NSInteger, NYOperationType) {
+    NYOperationTypeShare,
+    NYOperationTypePay,
+};
 
 typedef void(^NYShareComletion)(NSError *error, id response);/**< 回调 */
 /**
@@ -38,7 +43,7 @@ typedef void(^NYShareComletion)(NSError *error, id response);/**< 回调 */
 
 //三方平台注册应用
 
-///--- 微信 --- 
+///--- 微信 ---
 #define WX_APP_ID @""
 #define WX_APP_SECRET @""
 
@@ -47,19 +52,19 @@ typedef void(^NYShareComletion)(NSError *error, id response);/**< 回调 */
 #define WB_APP_SECRET @""
 #define WB_REDIRECT_URL @""
 
-//QQ
+//QQ 
 #define QQ_APP_ID @""
 #define QQ_APP_KEY @""
 
 /**
  * 三方分享类
  **/
-@interface NYShareEngine : NSObject <WBHttpRequestDelegate, WeiboSDKDelegate, WXApiDelegate>
+@interface NYShareEngine : NSObject <WBHttpRequestDelegate, WeiboSDKDelegate, WXApiDelegate, QQApiInterfaceDelegate>
 
 @property (strong, nonatomic) NSString *WeiboToken; /**< weibo token*/
 @property (strong, nonatomic) NSString *WeChatToken;/**< wechat */
 @property (strong, nonatomic) NSString *WeChatRefreshToken;/**< wechat */
-
+@property (assign, nonatomic) BOOL isAppDelegate;
 
 + (instancetype)sharedEngine;/**< 单例 */
 - (void)registerApp;/**< 注册应用 */

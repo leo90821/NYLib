@@ -37,7 +37,7 @@
     [WeiboSDK registerApp:WB_APP_KEY];
     [WeiboSDK enableDebugMode:NO];
     [WXApi registerApp:WX_APP_ID];
-    [[TencentOAuth alloc] initWithAppId:QQ_APP_ID andDelegate:nil];
+    [[TencentOAuth alloc] initWithAppId:QQ_APP_ID andDelegate:self];
 
 }
 
@@ -51,10 +51,12 @@
 }
 
 - (void)shareRequest:(NYShareType)shareType {
+    self.isAppDelegate = YES;
+    BOOL status = NO;
     switch (shareType) {
         case NYShareTypeQQ: {
             SendMessageToQQReq *request = [SendMessageToQQReq reqWithContent:[self.shareObject QQNewsObject]];
-            [QQApiInterface sendReq:request];
+            status = [QQApiInterface sendReq:request];
             break;
         }
         case NYShareTypeWeChatSession:
@@ -64,7 +66,7 @@
             req.bText = NO;
             req.message = [self.shareObject WeChatMessageObject];
             req.scene = (self.shareType == NYShareTypeWeChatSession)?WXSceneSession:WXSceneTimeline;
-            [WXApi sendReq:req];
+            status = [WXApi sendReq:req];
             
             break;
         }
@@ -73,7 +75,7 @@
             request.redirectURI = WB_REDIRECT_URL;
             request.scope = @"all";
             WBSendMessageToWeiboRequest *sendMsg = [WBSendMessageToWeiboRequest requestWithMessage:[self.shareObject WeiboMessageObject] authInfo:request access_token:self.WeiboToken];
-            [WeiboSDK sendRequest:sendMsg];
+            status = [WeiboSDK sendRequest:sendMsg];
             break;
         }
         default:
@@ -107,20 +109,61 @@
             }
         }
     } else if ([response isKindOfClass:[WBSendMessageToWeiboResponse class]]) {
-        
+        switch (response.statusCode) {
+            case WeiboSDKResponseStatusCodeSuccess:
+                self.completion(nil, @(WeiboSDKResponseStatusCodeSuccess));
+                break;
+                
+            default:
+                break;
+        }
     }
+    self.isAppDelegate = NO;
 }
 
-#pragma mark - wechat delegate
+#pragma mark - wechat delegate / QQ
 
-- (void)onReq:(BaseReq *)req {
+//- (void)onReq:(BaseReq *)req {
+//    
+//}
+//
+//- (void)onResp:(BaseResp *)resp {
+//    
+//}
+
+- (void)onReq:(id)req {
     
 }
 
-- (void)onResp:(BaseResp *)resp {
+- (void)onResp:(id)resp {
     if ([resp isKindOfClass:[SendMessageToWXResp class]]) {
-        
+        NSInteger code = ((SendMessageToWXResp *)resp).errCode;
+        switch (code) {
+            case 0: {
+                self.completion(nil, @(code));
+                break;
+            }
+            default:
+                break;
+        }
+    } else if ([resp isKindOfClass:[QQBaseResp class]]) {
+        NSInteger type = ((QQBaseResp *)resp).type;
+        switch (type) {
+            case ESENDMESSAGETOQQRESPTYPE:
+                self.completion(nil, nil);
+                break;
+                
+            default:
+                break;
+        }
     }
+    
+    self.isAppDelegate = NO;
+
+}
+
+
+- (void)isOnlineResponse:(NSDictionary *)response {
     
 }
 
